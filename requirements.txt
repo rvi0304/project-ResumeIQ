@@ -273,7 +273,6 @@ pygame==2.6.1
 Pygments @ file:///C:/Users/dev-admin/perseverance-python-buildout/croot/pygments_1699474141968/work
 PyJWT @ file:///C:/b/abs_04qhgo75wz/croot/pyjwt_1715095119685/work
 pylint @ file:///C:/Users/dev-admin/perseverance-python-buildout/croot/pylint_1699495689806/work
-pylint-venv @ file:///C:/b/abs_3f6p_17zia/croot/pylint-venv_1709837680309/work
 pyls-spyder==0.4.0
 PyNaCl @ file:///C:/Users/dev-admin/perseverance-python-buildout/croot/pynacl_1699563077212/work
 pyodbc @ file:///C:/b/abs_cbgr1yn8qs/croot/pyodbc_1725560257385/work
