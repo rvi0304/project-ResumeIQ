@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Welcome | ResumeIQ</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #667eea;
+      --primary-dark: #5a67d8;
+      --background: white;
+      --text: #333;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #667eea, #764ba2);
+      color: var(--text);
+      padding: 0;
+    }
+
+    /* NAVIGATION BAR */
+    .navbar {
+      background: linear-gradient(90deg, #667eea, #764ba2);
+      padding: 12px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      border-radius: 0 0 15px 15px;
+      color: white;
+      font-weight: 600;
+      transition: background-color 0.3s ease;
+    }
+
+    .navbar:hover {
+      background: linear-gradient(90deg, #5a67d8, #5a4b9d);
+    }
+
+    .navbar .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+
+    .navbar .logo-container:hover {
+      transform: scale(1.05);
+    }
+
+    .navbar img {
+      height: 45px;
+      filter: drop-shadow(0 0 2px rgba(0,0,0,0.3));
+    }
+
+    .navbar .site-title {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: white;
+      user-select: none;
+      letter-spacing: 1px;
+    }
+
+
+    .container {
+      margin: 40px auto;
+      background: var(--background);
+      color: var(--text);
+      max-width: 1000px;
+      width: 100%;
+      border-radius: 20px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+      display: flex;
+      flex-wrap: wrap;
+      overflow: hidden;
+    }
+
+    .left {
+      flex: 1;
+      min-width: 300px;
+      padding: 50px;
+      background: var(--primary);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .left h1 {
+      font-size: 3rem;
+      margin-bottom: 20px;
+    }
+
+    .left p {
+      font-size: 1.2rem;
+      line-height: 1.6;
+    }
+
+    .right {
+      flex: 1;
+      min-width: 300px;
+      padding: 50px;
+      background: var(--background);
+      color: var(--text);
+      position: relative;
+    }
+
+    .features {
+      margin-bottom: 30px;
+    }
+
+    .features h2 {
+      margin-bottom: 15px;
+    }
+
+    .features ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .features ul li {
+      margin-bottom: 10px;
+      font-size: 1.1rem;
+      padding: 10px;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+    }
+
+    .features ul li i {
+      color: var(--primary);
+      margin-right: 10px;
+      transition: color 0.3s ease;
+    }
+
+    .features ul li:hover {
+      background-color: #f0f4ff;
+      transform: translateX(5px);
+    }
+
+    .features ul li:hover i {
+      color: #5a67d8;
+    }
+
+    .btn-get-started {
+      background-color: #667eea;
+      color: white;
+      padding: 12px 28px;
+      font-size: 18px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      display: inline-block;
+      text-align: center;
+      text-decoration: none;
+    }
+
+    .btn-get-started:hover {
+      background-color: var(--primary-dark);
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        flex-direction: column;
+        margin: 20px;
+      }
+
+      .left, .right {
+        padding: 30px;
+        text-align: center;
+      }
+
+      .navbar {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .site-title {
+        font-size: 1.2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="navbar">
+    <div class="logo-container">
+      <img src="{{ url_for('static', filename='logo.png') }}" alt="ResumeIQ Logo" />
+      <span class="site-title">ResumeIQ</span>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="left">
+      <h1>Welcome to ResumeIQ</h1>
+      <p>Analyze, match, and compare resumes intelligently using powerful AI-driven tools. Make hiring process smarter and faster.</p>
+    </div>
+    <div class="right">
+      <div class="features">
+        <h2>🚀 Features</h2>
+        <ul>
+          <li><i class="fas fa-file-upload"></i> Upload multiple PDF resumes</li>
+          <li><i class="fas fa-search"></i> Search resumes by skill or role</li>
+          <li><i class="fas fa-chart-bar"></i> Get AI-generated summaries</li>
+          <li><i class="fas fa-star"></i> Highlight best-matching resume</li>
+          <li><i class="fas fa-eye"></i> Preview resumes inside the app</li>
+        </ul>
+      </div>
+      <a href="{{ url_for('analyze') }}" class="btn-get-started">Go to ResumeIQ</a>
+    </div>
+  </div>
+</body>
+</html>

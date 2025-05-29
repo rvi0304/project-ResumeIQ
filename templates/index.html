@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Resume Analyzer</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #667eea, #764ba2);
+      color: #333;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes pulse {
+      0% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.05);
+      }
+      100% {
+        transform: scale(1);
+      }
+    }
+
+    .main {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      gap: 20px;
+      padding: 30px;
+      justify-content: center;
+      flex-direction: row;
+      max-width: 1200px;
+      width: 100%;
+      animation: fadeInUp 1s ease-out;
+    }
+
+    .container {
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+      padding: 30px;
+      flex: 3;
+      min-width: 480px;
+      max-width: 700px;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.3s ease-in-out;
+      position: relative;
+      animation: fadeInUp 1.2s ease-out;
+    }
+
+    .test-animation {
+      animation: fadeInUp 1s ease-out;
+    }
+
+    .sidebar {
+      background: #f9f9f9;
+      border-radius: 15px;
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+      padding: 10px;
+      flex: 1;
+      min-width: 240px;
+      max-width: 350px;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      transition: transform 0.3s ease-in-out;
+      animation: fadeInUp 1.2s ease-out;
+      max-height: 500px;
+      overflow-y: auto;
+      border: 1px solid #ccc;
+    }
+
+    h1, h2 {
+      text-align: center;
+      color: #444;
+      margin-bottom: 10px;
+      font-size: 2rem;
+    }
+
+    h2 {
+      font-size: 1.5rem;
+    }
+
+    label {
+      font-weight: bold;
+      margin-top: 20px;
+      display: block;
+      font-size: 1.1rem;
+      color: #444;
+    }
+
+    input[type="file"], input[type="text"], button {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+    }
+
+    button {
+      background-color: #667eea;
+      color: white;
+      border: none;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #5a67d8;
+      animation: pulse 0.5s;
+    }
+
+    .output-box {
+      margin-top: 20px;
+      padding: 15px;
+      background-color: #f5f5f5;
+      border-left: 5px solid #667eea;
+      border-radius: 10px;
+      white-space: pre-line;
+    }
+
+    .section {
+      margin-top: 30px;
+    }
+
+    ul#pdfList {
+      list-style: none;
+      padding: 0;
+      margin-top: 20px;
+    }
+
+    ul#pdfList li {
+      background: #f0f0f0;
+      padding: 10px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      font-size: 14px;
+      color: #333;
+      transition: background 0.3s ease;
+    }
+
+    ul#pdfList li:hover {
+      background-color: #e0e0e0;
+      cursor: pointer;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0, 0, 0, 0.4);
+    }
+    .modal-content {
+      background-color: #fefefe;
+      margin: 15% auto;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 80%;
+      max-width: 400px;
+      text-align: center;
+    }
+    .close-btn {
+      color: #aaa;
+      font-size: 28px;
+      font-weight: bold;
+      position: absolute;
+      top: 10px;
+      right: 25px;
+    }
+    .close-btn:hover,
+    .close-btn:focus {
+      color: black;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .notification {
+      display: none;
+      background-color: #4CAF50;
+      color: white;
+      padding: 15px;
+      margin-top: 20px;
+      border-radius: 5px;
+      text-align: center;
+    }
+
+    @media (max-width: 768px) {
+      .main {
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .container, .sidebar {
+        max-width: 100%;
+      }
+    }
+
+    .swipe {
+      transition: transform 0.3s ease-in-out;
+    }
+
+    .swipe:hover {
+      transform: translateX(5px);
+    }
+
+    .tooltip {
+      position: relative;
+      display: inline-block;
+    }
+
+    .tooltip .tooltiptext {
+      visibility: hidden;
+      width: 140px;
+      background-color: #555;
+      color: #fff;
+      text-align: center;
+      border-radius: 6px;
+      padding: 5px 0;
+      position: absolute;
+      z-index: 1;
+      bottom: 125%;
+      left: 50%;
+      margin-left: -70px;
+      opacity: 0;
+      transform: scale(0.8);
+      transition: all 0.3s ease;
+    }
+
+    .tooltip:hover .tooltiptext {
+      visibility: visible;
+      opacity: 1;
+      transform: scale(1);
+    }
+  </style>  
+</head>
+<body>
+  <div id="mainContent">
+    <div class="main">
+      <!-- Analyzer Section -->
+      <div class="container swipe test-animation">
+        <a href="/" style="margin-bottom: 10px; display: inline-block; color: #667eea; text-decoration: none;">← Back to Home</a>
+        <h1>📄 Resume Analyzer</h1>
+        <div class="section">
+          <div class="section">
+            <form id="analyzeForm" method="POST" enctype="multipart/form-data">
+              <label for="resumes">Upload Resume (PDF only):</label>
+              <input type="file" id="resumes" name="resumes" accept="application/pdf" multiple required />
+
+              <label for="keyword">Search Role/Skill:</label>
+              <input type="text" id="keyword" name="keyword" placeholder="E.g., JavaScript, Data Analyst, Python" />
+
+              <button type="submit">Upload & Analyze</button>
+            </form>
+
+            <div id="loadingMessage" class="notification" style="display:none; background-color: #ff9800;">
+              ⏳ Analyzing resumes, please wait...
+            </div>
+
+          
+            {% if message %}
+              <div class="output-box" style="color: red;">{{ message|safe }}</div>
+            {% endif %}
+          </div>        
+        </div>
+        <div class="section">
+          <h2>📄 Resume Summaries</h2>
+          {% for filename, summary in summaries.items() %}
+            <div class="output-box">
+              <strong>{{ filename }}</strong><br>
+              {{ summary }}
+            </div>
+          {% endfor %}
+        </div>
+
+
+        <div class="section">
+          <h2>🔍 Matching Resumes for "{{ request.form.get('keyword') }}"</h2>
+          {% if matched_resumes %}
+            {% for filename in matched_resumes %}
+              <div class="output-box" style="margin-bottom: 30px;">
+                <strong>{{ filename }}</strong><br>
+                <iframe src="{{ url_for('view_pdf', filename=filename) }}" 
+                        width="100%" height="500px" style="border: 1px solid #ccc; border-radius: 8px;"></iframe>
+              </div>
+            {% endfor %}
+          {% else %}
+            {% if request.method == 'POST' and request.form.get('keyword') %}
+              <p>No matching resumes found for '{{ request.form.get('keyword') }}'.</p>
+            {% endif %}
+          {% endif %}
+          {% if matched_resumes %}
+            <div class="output-box">
+              <strong>🏆 Best Match:</strong> {{ best_resume }}
+            </div>
+          {% endif %}
+
+        </div>
+      </div>
+
+      <div class="sidebar swipe">
+        <h2>📁 Uploaded PDFs</h2>
+        {% if existing_pdfs %}
+          <ul>
+            {% for pdf in existing_pdfs %}
+              <li>
+                <a href="{{ url_for('view_pdf', filename=pdf) }}" target="_blank">{{ pdf }}</a>
+              </li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <p>No PDFs uploaded yet.</p>
+        {% endif %}
+      </div>
+      <div id="popupMessage" class="modal">
+        <div class="modal-content">
+          <span class="close-btn" onclick="closePopup()">&times;</span>
+          <p id="popupText"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notification Element -->
+  <div id="notification" class="notification"></div>
+    
+  <script>
+    const uploadedFiles = [];
+
+    async function handleUpload() {
+      const fileInput = document.getElementById('resumeInput');
+      const files = fileInput.files;
+
+      if (files.length === 0) {
+        alert("Please select at least one PDF file.");
+        return;
+      }
+
+      for (const file of files) {
+        if (file.type !== "application/pdf") {
+          alert("Only PDF files are allowed.");
+          continue;
+        }
+
+        const formData = new FormData();
+        formData.append("resume", file);
+        formData.append("job_keywords", "Python, JavaScript, Machine Learning");
+        formData.append("required_education", "BTech");
+
+        try {
+          const response = await fetch("/upload", {
+            method: "POST",
+            body: formData
+          });
+
+          if (!response.ok) {
+            const text = await response.text();
+            throw new Error(`Server error: ${text}`);
+          }
+
+          const data = await response.json();
+
+          if (data.error) {
+            alert(`❌ Error: ${data.error}`);
+          } else {
+            uploadedFiles.push({
+              name: data.filename,
+              content: data.text || "",
+            });
+            displayUploadedFiles();
+            document.getElementById("summaryOutput").textContent = 
+              `Score: ${data.score}\n\nSummary:\n${data.summary}`;
+            
+            showNotification(`Resume "${data.filename}" uploaded successfully!`);
+          }
+        } catch (err) {
+          console.error(err);
+          alert(`❌ Upload failed: ${err.message}`);
+        }
+      }
+    }
+
+    document.getElementById("analyzeForm").addEventListener("submit", async function (event) {
+      event.preventDefault();
+
+      const form = event.target;
+      const formData = new FormData(form);
+
+      // Show loading message
+      document.getElementById("loadingMessage").style.display = "block";
+
+      try {
+        const response = await fetch("/analyze", {
+          method: "POST",
+          body: formData,
+        });
+
+        const html = await response.text();
+        const mainContent = document.getElementById("mainContent");
+        mainContent.innerHTML = html;
+      } catch (error) {
+        console.error("Error:", error);
+        alert("❌ Something went wrong while analyzing.");
+      } finally {
+        // Still hide the loading message just in case
+        document.getElementById("loadingMessage").style.display = "none";
+      }
+    });
+
+
+    function displayUploadedFiles() {
+      const list = document.getElementById('pdfList');
+      list.innerHTML = "";
+      uploadedFiles.forEach((file) => {
+        const li = document.createElement('li');
+        li.textContent = file.name;
+        list.appendChild(li);
+      });
+    }
+
+    function showNotification(message) {
+      const notification = document.getElementById('notification');
+      notification.textContent = message;
+      notification.style.display = "block";
+
+      setTimeout(() => {
+        notification.style.display = "none";
+      }, 5000);
+    }
+
+    function handleSearch() {
+      const searchTerm = document.getElementById('searchBox').value.toLowerCase();
+      const resultBox = document.getElementById('searchResult');
+
+      if (uploadedFiles.length === 0) {
+        resultBox.textContent = "⚠️ Please upload at least one resume first.";
+        return;
+      }
+
+      if (!searchTerm) {
+        resultBox.textContent = "⚠️ Please enter a skill or role to search.";
+        return;
+      }
+
+      const matches = uploadedFiles.filter(file => file.content.toLowerCase().includes(searchTerm));
+
+      if (matches.length > 0) {
+        resultBox.textContent = `✅ Found "${searchTerm}" in ${matches.length} resume(s):\n` + 
+          matches.map(m => `- ${m.name}`).join("\n");
+      } else {
+        resultBox.textContent = `❌ "${searchTerm}" not found in any resume.`;
+      }
+    }
+
+    function openPopup(message) {
+      document.getElementById('popupText').innerHTML = message;  // Set the message in the modal
+      document.getElementById('popupMessage').style.display = "block";  // Show the modal
+    }
+
+    // Function to close the modal
+    function closePopup() {
+      const modal = document.getElementById('popupMessage');
+      modal.style.transition = "opacity 0.5s ease";
+      modal.style.opacity = 0;
+      setTimeout(() => {
+        modal.style.display = "none";
+        modal.style.opacity = 1; // Reset for next use
+      }, 500);
+    }
+
+
+    // Trigger the popup if message exists
+    {% if message and request.method == 'POST' %}
+      window.onload = function () {
+        openPopup("{{ message|safe }}");
+        setTimeout(closePopup, 5000); // Auto-close after 5 seconds
+      };
+    {% endif %}
+
+  
+    function generateSummary() {
+      const output = document.getElementById('summaryOutput');
+      output.textContent = "⏳ Generating summary...";
+
+      fetch('/generate_summary', { method: 'POST' })
+        .then(res => res.ok ? res.json() : Promise.reject("Summary generation failed."))
+        .then(data => {
+          output.textContent = data.summary || "Summary not available.";
+        })
+        .catch(err => {
+          output.textContent = "❌ Error generating summary.";
+        });
+    }
+
+    function compareResumes() {
+      const output = document.getElementById('comparisonOutput');
+      output.textContent = "⏳ Comparing resumes...";
+
+      const keyword = document.getElementById('keyword').value.trim();
+      if (!keyword) {
+        output.textContent = "⚠️ Please enter a keyword to compare.";
+        return;
+      }
+
+      fetch('/compare_resumes', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ keyword }),
+      })
+        .then(res => res.ok ? res.json() : Promise.reject("Comparison failed."))
+        .then(data => {
+          if (data.error) {
+            output.textContent = `❌ ${data.error}`;
+          } else {
+            output.textContent = `Best Resume: ${data.bestResume}`;
+          }
+        })
+        .catch(err => {
+          output.textContent = "❌ Error comparing resumes.";
+        });
+    }
+
+  </script>
+</body>
+</html>
