@@ -1,6 +1,4 @@
 import pdfplumber
-import tkinter as tk
-from tkinter import filedialog
 from io import BytesIO
 import webbrowser
 from sentence_transformers import SentenceTransformer, util
