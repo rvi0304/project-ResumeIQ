@@ -11,6 +11,9 @@ UPLOAD_FOLDER = 'static/uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
+# Store resumes globally
+resumes_data = {}
+
 # Route for the homepage
 @app.route("/home")
 def home():
@@ -24,6 +27,7 @@ def redirect_to_home():
 # Resume upload and analysis route
 @app.route("/analyze", methods=["GET", "POST"])
 def analyze():
+    global resumes_data
     message = ""
     summaries = {}
     matched_resumes = {}
@@ -45,23 +49,22 @@ def analyze():
 
                 if is_resume(text):
                     summary = process_resume(content)
+                    resumes_data[file.filename] = {"text": text, "summary": summary}
                     summaries[file.filename] = summary
                 else:
                     message += f"{file.filename} is not a valid resume.<br>"
                     os.remove(file_path)
 
-        if keyword and summaries:
-            resume_texts = {
-                fname: extract_text_from_pdf(open(os.path.join(app.config['UPLOAD_FOLDER'], fname), "rb").read())
-                for fname in summaries.keys()
-            }
 
+        if keyword:
+            resume_texts = {fname: data["text"] for fname, data in resumes_data.items()}
             matched_resumes = search_resumes(resume_texts, keyword)
 
             if matched_resumes:
                 sorted_matches = sorted(matched_resumes.items(), key=lambda x: x[1]['similarity_score'], reverse=True)
                 best_resume = sorted_matches[0][0]
 
+                # ✅ Print comparison summary in command prompt
                 print("\n📌 Resume Comparison Summary:")
                 print("| Filename           | Similarity Score |")
                 print("|--------------------|------------------|")
@@ -69,7 +72,8 @@ def analyze():
                     print(f"| {fname:<18} | {info['similarity_score']:.2f}            |")
                 print(f"\n🏆 Best Matching Resume: {best_resume}\n")
 
-    existing_pdfs = os.listdir(app.config['UPLOAD_FOLDER'])
+
+    existing_pdfs = list(resumes_data.keys())
     if not existing_pdfs and not message:
         message += "No valid resumes uploaded.<br>"
 
@@ -89,22 +93,14 @@ def view_pdf(filename):
 
 @app.route("/generate_summary", methods=["POST"])
 def generate_summary():
-    summaries = {}
-    uploaded_files = os.listdir(app.config['UPLOAD_FOLDER'])
-
-    for fname in uploaded_files:
-        with open(os.path.join(app.config['UPLOAD_FOLDER'], fname), "rb") as f:
-            content = f.read()
-            summary = process_resume(content)
-            summaries[fname] = summary
-
-    all_summaries = "\n\n".join(f"{fname}: {summary}" for fname, summary in summaries.items())
+    all_summaries = "\n\n".join(
+        f"{fname}: {data['summary']}" for fname, data in resumes_data.items()
+    )
     return jsonify({"summary": all_summaries})
 
 @app.route("/compare_resumes", methods=["POST"])
 def compare_resumes():
-    uploaded_files = os.listdir(app.config['UPLOAD_FOLDER'])
-    if not uploaded_files:
+    if not resumes_data:
         return jsonify({"bestResume": "No resumes uploaded."})
 
     data = request.get_json()
@@ -112,11 +108,7 @@ def compare_resumes():
     if not keyword:
         return jsonify({"error": "Keyword is required for comparison."}), 400
 
-    resume_texts = {
-        fname: extract_text_from_pdf(open(os.path.join(app.config['UPLOAD_FOLDER'], fname), "rb").read())
-        for fname in uploaded_files
-    }
-
+    resume_texts = {fname: data["text"] for fname, data in resumes_data.items()}
     matched_resumes = search_resumes(resume_texts, keyword)
 
     if not matched_resumes:
@@ -142,6 +134,7 @@ def compare_resumes():
 @app.route("/health")
 def health():
     return "OK", 200
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
