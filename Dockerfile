@@ -7,7 +7,9 @@ RUN pip install --no-cache-dir --root-user-action=ignore -r requirements.txt
 
 COPY . .
 
-ENV PORT 8080
-EXPOSE 8080
+# Render will set this dynamically
+ENV PORT=10000
+EXPOSE 10000
 
 CMD gunicorn --bind 0.0.0.0:$PORT app:app
+
