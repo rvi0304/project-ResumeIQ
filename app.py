@@ -14,15 +14,20 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 # Store resumes globally
 resumes_data = {}
 
+# Root route for Render health check
+@app.route("/")
+def root():
+    return "Service running ✅", 200
+    
 # Route for the homepage
 @app.route("/home")
 def home():
     return render_template("home.html")
 
-# Redirect "/" to the homepage
-@app.route("/")
-def redirect_to_home():
-    return redirect(url_for("home"))
+# # Redirect "/" to the homepage
+# @app.route("/")
+# def redirect_to_home():
+#     return redirect(url_for("home"))
 
 # Resume upload and analysis route
 @app.route("/analyze", methods=["GET", "POST"])
